@@ -8,11 +8,11 @@ from trainer import SlotFillingTrainer
 
 class SlotFillingAdapter(LogicAdapter):
 
-    def __init__(self, **kwargs):
+    def __init__(self, intent, **kwargs):
         super(LogicAdapter, self).__init__(**kwargs)
 
+        self.intent = intent
         self.storage = kwargs.get('storage', StorageAdapter())
-
         self.trainer = SlotFillingTrainer(self.storage)
 
     def can_process(self, statement):
@@ -28,7 +28,8 @@ class SlotFillingAdapter(LogicAdapter):
 
     def process(self, statement):
         """
-        main goal of this method is to detect intent
+        main goal of this method is to detect parameters intent
+        according to intent
         :param statement:
         :return:
         """

@@ -8,11 +8,11 @@ from trainer import IntentTrainer
 
 class IntentAdapter(LogicAdapter):
 
-    def __init__(self, **kwargs):
+    def __init__(self, domain, **kwargs):
         super(LogicAdapter, self).__init__(**kwargs)
 
+        self.domain = domain
         self.storage = kwargs.get('storage', StorageAdapter())
-
         self.trainer = IntentTrainer(self.storage)
 
     def can_process(self, statement):
@@ -28,7 +28,7 @@ class IntentAdapter(LogicAdapter):
 
     def process(self, statement):
         """
-        main goal of this method is to detect intent
+        main goal of this method is to detect intent according to domain
         :param statement:
         :return:
         """

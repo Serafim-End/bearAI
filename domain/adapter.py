@@ -9,9 +9,10 @@ from trainer import DomainTrainer
 
 class DomainAdapter(LogicAdapter):
 
-    def __init__(self, **kwargs):
+    def __init__(self, agent, **kwargs):
         super(LogicAdapter, self).__init__(**kwargs)
 
+        self.agent = agent
         self.storage = kwargs.get('storage', StorageAdapter())
         self.trainer = DomainTrainer(self.storage)
 
@@ -28,7 +29,7 @@ class DomainAdapter(LogicAdapter):
 
     def process(self, statement):
         """
-        detect domain - main goal of this adapter
+        detect domain according to agent - main goal of this adapter
         :param statement:
         :return:
         """
