@@ -11,16 +11,3 @@ class Customer(User):
     here possible to user inheritance of User class
     """
     agent = models.ForeignKey(Agent)
-
-
-class Developer(User):
-    """
-    here possible to user inheritance of User class
-    """
-    account_status = models.CharField(
-        choices=(
-            ('LO', 'LOW'),
-            ('ST', 'STANDART'),
-            ('EX', 'EXPENSIVE'),
-        )
-    )
