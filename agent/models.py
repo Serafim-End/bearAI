@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
 
-from assistant_custom.models import Developer
+from developer.models import Developer
 
 
 @python_2_unicode_compatible

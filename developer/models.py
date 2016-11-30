@@ -15,5 +15,6 @@ class Developer(User):
             ('LO', 'LOW'),
             ('ST', 'STANDART'),
             ('EX', 'EXPENSIVE'),
-        )
+        ),
+        max_length=150
     )

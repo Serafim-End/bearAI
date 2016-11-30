@@ -11,6 +11,8 @@ from intent.models import Intent
 class Parameter(models.Model):
 
     intent = models.ForeignKey(Intent)
+    is_obligatory = models.BooleanField()
+    name = models.CharField(max_length=150, blank=False)
 
     def __str__(self):
         pass
