@@ -7,4 +7,4 @@ class AgentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Agent
-        fields = ('developer',)
+        fields = ('developer', 'username', 'date_joined')

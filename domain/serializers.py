@@ -7,4 +7,4 @@ class DomainSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Domain
-        fields = ('__all__')
+        fields = ('agent', 'date_joined', 'name')
