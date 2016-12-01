@@ -1,9 +1,33 @@
-# coding:utf-8
+# coding: utf-8
+# flake8: noqa
 
-from input_adapter import InputAdapter
+from ..adapter import Adapter
+
+from developer.models import Developer
+from agent.serializers import AgentSerializer
+from domain.serializers import DomainSerializer
+from intent.serializers import IntentSerializer
+from slots.serializers import ParameterSerializer
+from intent.models import IntentData
+from intent.serializers import IntentDataSerializer
 
 
-class CRMAdapter(InputAdapter):
+class BaseStorageAdapter(Adapter):
 
-    def process_input(self):
-        raise NotImplementedError()
+    def get_class(self, cls):
+        if isinstance(cls, str):
+            cls = globals()[cls]
+        return cls
+
+    def func_object(self, cls, func_names, **kwargs):
+        cls = self.get_class(cls)
+
+        f = reduce(lambda c, e: getattr(c, e), func_names, cls)
+
+        return f(**kwargs)
+
+    class SerializerException(Exception):
+
+        def __init__(self, msg):
+            self.msg = msg
+            raise Exception(msg) if msg else 'Serializer error'
