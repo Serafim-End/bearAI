@@ -1,33 +1,54 @@
-# coding: utf-8
+# coding:utf-8
 # flake8: noqa
 
-from ..adapter import Adapter
+import json
 
-from developer.models import Developer
-from agent.serializers import AgentSerializer
-from domain.serializers import DomainSerializer
-from intent.serializers import IntentSerializer
-from slots.serializers import ParameterSerializer
-from intent.models import IntentData
-from intent.serializers import IntentDataSerializer
+from input_adapter import InputAdapter
+
+from assistant.adapters.storage.storage_adapter import StorageAdapter
 
 
-class BaseStorageAdapter(Adapter):
+class CRMAdapter(InputAdapter):
 
-    def get_class(self, cls):
-        if isinstance(cls, str):
-            cls = globals()[cls]
-        return cls
+    def __init__(self, file_path):
+        self.file_path = file_path
+        self.storage_adapter = StorageAdapter()
 
-    def func_object(self, cls, func_names, **kwargs):
-        cls = self.get_class(cls)
+    def load_json_file(self):
+        with open(self.file_path) as data_file:
+            return json.load(data_file)
 
-        f = reduce(lambda c, e: getattr(c, e), func_names, cls)
+    def process_input(self):
+        data = self.load_json_file()
 
-        return f(**kwargs)
+        developer, created = self.storage_adapter.func_object(
+            'Developer', ['objects', 'get_or_create']
+        )
 
-    class SerializerException(Exception):
+        agent = self.storage_adapter.save(
+            'AgentSerializer',
+            data={'developer': developer.pk}
+        )
 
-        def __init__(self, msg):
-            self.msg = msg
-            raise Exception(msg) if msg else 'Serializer error'
+        for domain in data['domain']:
+            domain_ser = self.storage_adapter.save(
+                'DomainSerializer',
+                data={'agent': agent.pk, 'name': domain['name']}
+            )
+
+            for intent in domain['intent']:
+                intent_ser = self.storage_adapter.save(
+                    'IntentSerializer',
+                    data={'domain': domain_ser.pk, 'name': intent['name']}
+                )
+
+                for parameter in intent['parameters']:
+                    for k, v in parameter.iteritems():
+                        self.storage_adapter.save(
+                            'ParameterSerializer',
+                            data={
+                                'intent': intent_ser.pk,
+                                'name': k,
+                                'is_obligatory': bool(v)
+                            }
+                        )
