@@ -11,6 +11,8 @@ from assistant.adapters.storage.storage_adapter import StorageAdapter
 class CRMAdapter(InputAdapter):
 
     def __init__(self, file_path):
+        super(CRMAdapter, self).__init__()
+
         self.file_path = file_path
         self.storage_adapter = StorageAdapter()
 
