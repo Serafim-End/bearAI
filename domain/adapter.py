@@ -9,10 +9,9 @@ from trainer import DomainTrainer
 
 class DomainAdapter(LogicAdapter):
 
-    def __init__(self, agent, **kwargs):
-        super(LogicAdapter, self).__init__(**kwargs)
+    def __init__(self, **kwargs):
+        super(DomainAdapter, self).__init__(**kwargs)
 
-        self.agent = agent
         self.storage = kwargs.get('storage', StorageAdapter())
         self.trainer = DomainTrainer(self.storage)
 

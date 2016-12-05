@@ -1,3 +1,7 @@
+# coding: utf-8
+# flake8: noqa
+
+
 """
 Django settings for bearAI project.
 
@@ -74,28 +78,28 @@ WSGI_APPLICATION = 'bearAI.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
-# import os
-# if os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine'):
-#     # Running on production App Engine, so use a Google Cloud SQL database.
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.mysql',
-#             'HOST': '/cloudsql/<your-project-id>:<your-cloud-sql-instance>',
-#             'NAME': '<your-database-name>',
-#             'USER': 'root',
-#         }
-#     }
-# else:
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.mysql',
-#             'NAME': '<your-database-name>',
-#             'USER': '<your-database-user>',
-#             'PASSWORD': '<your-database-password>',
-#             'HOST': '<your-database-host>',
-#             'PORT': '3306',
-#         }
-#     }
+import os
+if os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine'):
+    # Running on production App Engine, so use a Google Cloud SQL database.
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'HOST': '/cloudsql/<your-project-id>:<your-cloud-sql-instance>',
+            'NAME': '<your-database-name>',
+            'USER': 'root',
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'prime_local',
+            'USER': 'root',
+            'PASSWORD': '9234368n',
+            'HOST': 'localhost',
+            'PORT': '3306',
+        }
+    }
 
 
 # Password validation

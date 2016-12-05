@@ -23,8 +23,17 @@ threadsafe: yes
 handlers:
 - url: /static
   static_dir: static/
+
 - url: .*
   script: bearAI.wsgi.application
+
+- url: /_ah/queue/deferred
+  script: google.appengine.ext.deferred.deferred.application
+  login: admin
+
+builtins:
+- deferred: on
+- appstats: on
 
 # Only pure Python libraries can be vendored
 # Python libraries that use C extensions can
@@ -32,4 +41,10 @@ handlers:
 libraries:
 - name: MySQLdb
   version: 1.2.5
+- name: ssl
+  version: "latest"
+- name: numpy
+  version: "latest"
+- name: webapp2
+  version: "2.5.2"
 # [END django_app]

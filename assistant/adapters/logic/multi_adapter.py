@@ -25,8 +25,11 @@ class MultiLogicAdapter(LogicAdapter):
 
         return max_confidence, result
 
-    def add_adapter(self, adapter):
-        self.adapters.append(adapter)
+    def add_adapter(self, adapter, order_index=None):
+        if not order_index:
+            self.adapters.append(adapter)
+        else:
+            self.adapters.insert(order_index, adapter)
 
     def set_context(self, context):
         super(MultiLogicAdapter, self).set_context(context)

@@ -3,9 +3,14 @@
 import logging
 
 from adapters.storage.storage_adapter import StorageAdapter
-from adapters.input.crm_adapter import InputAdapter
+from adapters.input.input_adapter import InputAdapter
 from adapters.output.output_format_adapter import OutputFormatAdapter
 from adapters.logic.multi_adapter import MultiLogicAdapter
+from adapters.logic.logic_adapter import LogicAdapter
+from context_manager import ContextManager
+from task import Task
+
+from utils.module_loading import import_loading
 
 
 class Assistant(object):
@@ -25,11 +30,25 @@ class Assistant(object):
 
         # logic adapters = stack of adapters in organized queue
 
-        self.input = InputAdapter(**kwargs)
-        self.storage = StorageAdapter(**kwargs)
-        self.output = OutputFormatAdapter(**kwargs)
-        self.logic = MultiLogicAdapter(**kwargs)
+        input_class = kwargs.get('input_class')
+        if input_class:
+            self.input = import_loading(input_class)(**kwargs)
+        else:
+            self.input = InputAdapter(**kwargs)
 
+        storage_class = kwargs.get('storage_class')
+        if storage_class:
+            self.storage = import_loading(storage_class)(**kwargs)
+        else:
+            self.storage = StorageAdapter(**kwargs)
+
+        output_class = kwargs.get('output_class')
+        if output_class:
+            self.output = import_loading(output_class)(**kwargs)
+        else:
+            self.output = OutputFormatAdapter(**kwargs)
+
+        self.logic = MultiLogicAdapter(**kwargs)
         self.logger = kwargs.get('logger', logging.getLogger(__name__))
 
         self.storage.set_context(self)
@@ -38,22 +57,49 @@ class Assistant(object):
         self.output.set_context(self)
 
         # self.trainer = train dialog - response of bot,
-        # but only collecting data only
+        # but now we only can collect data
 
-    def add_adapter(self, adapter):
-        raise NotImplementedError()
+    def add_adapter(self, logic_adapter, order_index, **kwargs):
+        self.validate_adapter(import_loading(logic_adapter), LogicAdapter)
+
+        CustomAdapter = import_loading(logic_adapter)
+        instance_adapter = CustomAdapter(**kwargs)
+
+        self.logic.add_adapter(instance_adapter, order_index)
 
     def remove_adapter(self, adapter):
-        raise NotImplementedError()
+        for i, a in enumerate(self.logic.adapters):
+            if adapter == type(a).__name__:
+                del(self.logic.adapters[i])
+                return True
+        return False
 
-    def validate_adapter(self, adapter_class):
-        raise NotImplementedError()
+    def validate_adapter(self, validate_class, adapter_class):
+        from .adapters import Adapter
 
-    def response(self):
-        raise NotImplementedError()
+        if not issubclass(import_loading(validate_class), Adapter):
+            raise self.InvalidAdapterException(
+                'class {} is not adapter class'.format(
+                    validate_class.__name__
+                )
+            )
 
-    # def train(self):
-    #     pass
+        if not issubclass(import_loading(adapter_class), adapter_class):
+            raise self.InvalidAdapterException(
+                'class {} is not an {} class {}'.format(
+                    validate_class.__name__,
+                    adapter_class.__name__
+                )
+            )
+
+    def response(self, input_seq):
+        input_statement = self.input.process_input(input_seq)
+
+        # get status of the task from db, session table
+        # task = ??? data about the task (class Task)
+        task = self.storage.get_task()
+
+        context_manager = ContextManager(statement=input_statement, task=task)
 
     class InvalidAdapterException(Exception):
 

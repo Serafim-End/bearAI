@@ -3,12 +3,12 @@
 
 import json
 
-from input_adapter import InputAdapter
+from input_adapter import InputDevAdapter
 
 from assistant.adapters.storage.storage_adapter import StorageAdapter
 
 
-class CRMAdapter(InputAdapter):
+class CRMAdapter(InputDevAdapter):
 
     def __init__(self, file_path):
         super(CRMAdapter, self).__init__()

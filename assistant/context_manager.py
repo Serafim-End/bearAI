@@ -3,9 +3,9 @@
 
 class ContextManager(object):
 
-    def __init__(self, statement):
-        self._statement = statement
-        self.status = self.detect_task_status()
+    def __init__(self, statement, task):
+        self.statement = statement
+        self.task = task
 
-    def detect_task_status(self):
+    def create_new_task(self):
         raise NotImplementedError()

@@ -2,6 +2,7 @@
 from django.db import DataError
 
 from base_storage_adapter import BaseStorageAdapter
+from ...task import Task
 
 
 class StorageAdapter(BaseStorageAdapter):
@@ -22,3 +23,19 @@ class StorageAdapter(BaseStorageAdapter):
         raise BaseStorageAdapter.SerializerException(
             msg='Instance was not saved'
         )
+
+    def get_task(self):
+        """
+        get task object from Session table
+        task object - task.Task
+        :return:
+        """
+        return Task()
+
+    def set_task(self, task):
+        """
+        write current task to Session table
+        :param task:
+        :return: True if task was written else False
+        """
+        pass
