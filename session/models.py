@@ -11,12 +11,14 @@ from django.utils.translation import ugettext_lazy as _
 
 from customer.models import Customer
 from intent.models import Intent
+from domain.models import Domain
 from slots.models import Parameter
 
 
 @python_2_unicode_compatible
 class Session(models.Model):
 
+    domain = models.ForeignKey(Domain)
     intent = models.ForeignKey(Intent)
     is_active = models.BooleanField()
     parameters = models.TextField(default=None)

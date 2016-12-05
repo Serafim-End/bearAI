@@ -2,6 +2,7 @@
 
 
 class Task(object):
+
     def __init__(self, domain=None, intent=None, parameters=None):
         self.domain = domain
         self.intent = intent
@@ -13,4 +14,10 @@ class Task(object):
 
     @property
     def get_parameters(self):
-        return self.parameters if len(self.parameters) != 0 else None
+        if len(self.parameters) == 0:
+            return None
+
+        for k, v in self.parameters.iteritems():
+            if self.parameters[k]['value'] is not None:
+                return self.parameters
+        return None
