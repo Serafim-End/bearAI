@@ -9,6 +9,7 @@ from ...conversation.models import Statement
 from ...task import Task
 
 from session.models import CustomerSession
+from session.models import Session
 
 
 class StorageAdapter(BaseStorageAdapter):
@@ -66,27 +67,25 @@ class StorageAdapter(BaseStorageAdapter):
         :param task:
         :return: True if task was written else False
         """
-
-        c_session = CustomerSession.objects.filter(customer=customer).last()
-        if not c_session:
+        if not task or not customer:
             return False
 
-        session = c_session.session
+        c_s = CustomerSession.objects.filter(customer=customer).last()
+        if not c_s:
+            return False
 
-        is_active = True
-        unknown_pars = []
+        s = Session() if not c_s.session.is_active else c_s.session
 
-        for parameter in task.parameters:
-            for k, v in parameter.iteritems():
-                if k == 'is_obligatory':
-                    continue
-                if not v and parameter.get('is_obligatory'):
-                    unknown_pars.append(k)
+        is_active = False
+        if task.parameters:
+            s.parameters = json.dumps(task.parameters)
 
-        if len(unknown_pars) == 0:
-            is_active = False
+            while not is_active and task.parameters:
+                k, v = task.parameters.popitem()
+                if task.parameters[k]['value'] is None:
+                    is_active = True
 
-        session.parameters = json.dumps(task.parameters)
-        session.is_active = is_active
-        session.save()
+        s.is_active = is_active
+        s.save()
+
         return True

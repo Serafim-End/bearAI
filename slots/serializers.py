@@ -1,3 +1,5 @@
+# coding: utf-8
+
 from rest_framework import serializers
 
 from slots.models import Parameter
