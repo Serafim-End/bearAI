@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
+from customer.models import Customer
 from intent.models import Intent
 from slots.models import Parameter
 
@@ -35,4 +36,13 @@ class Session(models.Model):
 
     def __str__(self):
         return '{}'.format(self.parameters)
-# Create your models here.
+
+
+@python_2_unicode_compatible
+class CustomerSession(models.Model):
+
+    customer = models.ForeignKey(Customer)
+    session = models.ForeignKey(Session)
+
+    def __str__(self):
+        return '{}'.format(self.customer.username)
