@@ -4,10 +4,13 @@ from django.db import models
 
 from django.utils.encoding import python_2_unicode_compatible
 
+from customer.models import Customer
+
 
 @python_2_unicode_compatible
 class Statement(models.Model):
 
+    customer = models.ForeignKey(Customer)
     message = models.CharField(
         max_length=300,
         blank=False,
