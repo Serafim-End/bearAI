@@ -112,6 +112,7 @@ class Assistant(object):
             task=task,
             domain_trainer=self.domain_trainer,
             intent_trainer=self.intent_trainer,
+            word2vec_trainer=self.word2vec_trainer,
             storage=self.storage
         )
 
@@ -135,6 +136,7 @@ class Assistant(object):
                 )
 
         self.domain_trainer = load_model('domain_trainer')
+        self.word2vec_trainer = load_model('word2vec_trainer')
         self.intent_trainer = load_model('intent_trainer')
 
     class InvalidAdapterException(Exception):

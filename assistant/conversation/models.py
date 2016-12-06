@@ -4,12 +4,16 @@ from django.db import models
 
 from django.utils.encoding import python_2_unicode_compatible
 
+from domain.models import Domain
 from customer.models import Customer
+from intent.models import Intent
 
 
 @python_2_unicode_compatible
 class Statement(models.Model):
 
+    domain = models.ForeignKey(Domain)
+    intent = models.ForeignKey(Intent)
     customer = models.ForeignKey(Customer)
     message = models.CharField(
         max_length=300,

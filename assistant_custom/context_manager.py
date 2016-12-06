@@ -22,7 +22,8 @@ class CustomContextManager(ContextManager):
 
         self.domain_adapter = CustomDomainAdapter(
             trainer=kwargs.get('domain_trainer'),
-            storage=self.storage
+            storage=self.storage,
+            **kwargs
         )
 
         # do not think that it is normal

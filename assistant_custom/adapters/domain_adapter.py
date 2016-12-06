@@ -9,6 +9,8 @@ import pymorphy2
 from sklearn.ensemble import BaggingClassifier
 
 from domain.adapter import DomainAdapter
+from domain.models import Domain
+from domain.models import DomainData
 from domain.trainer import DomainTrainer
 
 
@@ -20,7 +22,9 @@ class CustomDomainAdapter(DomainAdapter):
         # we should specify a lot of additional parameters
         self.trainer = kwargs.get('trainer')
         if not self.trainer:
-            self.trainer = CustomDomainTrainer(self.storage, **kwargs)
+            self.trainer = CustomDomainTrainer(
+                self.storage, **kwargs
+            )
 
     def can_process(self, statement):
         """
@@ -29,12 +33,9 @@ class CustomDomainAdapter(DomainAdapter):
         :param statement:
         :return:
         """
-        self.trainer.word2vec_model = self.trainer.get_word2vec_model(
-            self.trainer.word2vec_filename,
-            binary=True
-        )
-
-        return True
+        if statement:
+            return True
+        return False
 
     def process(self, statement):
         """
@@ -43,7 +44,8 @@ class CustomDomainAdapter(DomainAdapter):
         :return:
         """
         data = self.trainer.preprocess_message(statement.message)
-        return self.trainer.clf.predict(data)
+        domain_cls = self.trainer.clf.predict(data)
+        return Domain.objects.filter(id=domain_cls).first()
 
     def update_domain_data(self, can_update):
         """
@@ -52,7 +54,9 @@ class CustomDomainAdapter(DomainAdapter):
         you have already gone through the customer and that domain is correct
         :return: boolean that illustrates the status of db updates
         """
-        pass
+        if can_update:
+            d_data = DomainData(domain=Domain.objects.last())
+            d_data.put()
 
 
 class CustomDomainTrainer(DomainTrainer):
