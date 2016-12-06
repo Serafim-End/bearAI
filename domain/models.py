@@ -22,7 +22,8 @@ class Domain(models.Model):
 @python_2_unicode_compatible
 class DomainData(models.Model):
 
-    domain = models.ForeignKey(Domain)
+    value = models.IntegerField()
+    text = models.TextField()
 
     def __str__(self):
         return ', '.join([d.name for d in self.domain])

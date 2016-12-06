@@ -21,7 +21,8 @@ class Parameter(models.Model):
 @python_2_unicode_compatible
 class ParameterData(models.Model):
 
-    parameter = models.ForeignKey(Parameter)
+    text = models.TextField()
+    parameters = models.TextField()
 
     def __str__(self):
         pass

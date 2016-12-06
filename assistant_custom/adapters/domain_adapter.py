@@ -54,9 +54,7 @@ class CustomDomainAdapter(DomainAdapter):
         you have already gone through the customer and that domain is correct
         :return: boolean that illustrates the status of db updates
         """
-        if can_update:
-            d_data = DomainData(domain=Domain.objects.last())
-            d_data.put()
+        pass
 
 
 class CustomDomainTrainer(DomainTrainer):

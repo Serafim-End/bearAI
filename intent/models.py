@@ -21,8 +21,8 @@ class Intent(models.Model):
 
 @python_2_unicode_compatible
 class IntentData(models.Model):
-    intent = models.ForeignKey(Intent)
-    text = models.TextField(default=None)
+    value = models.IntegerField()
+    text = models.TextField()
 
     def __str__(self):
         return ', '.join([i.name for i in self.intent])
