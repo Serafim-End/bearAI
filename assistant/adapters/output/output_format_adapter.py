@@ -1,30 +1,32 @@
 # coding: utf-8
 
+import json
+
 from assistant.adapters.output.output_adapter import OutputAdapter
 
 
 class OutputFormatAdapter(OutputAdapter):
 
     JSON = 'json'
-    TEXT = 'text'
-    OBJECT = 'object'
 
-    VALID_FORMATS = (JSON, TEXT, OBJECT, )
+    VALID_FORMATS = (JSON, )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         super(OutputFormatAdapter, self).__init__(**kwargs)
-        self.format = kwargs.get('output_format', 'object')
+        self.format = kwargs.get('format')
+
+        if not self.format:
+            self.format = self.JSON
 
         if self.format not in self.VALID_FORMATS:
             raise self.UnrecognizedOutputFormatException()
 
-    def process_response(self, statement, confidence=None):
-        if self.format == self.TEXT:
-            return statement.text
-
-        if self.format == self.JSON:
-            return statement.serialize()
-        return statement
+    def process_response(self, response):
+        """
+        :param response: should be serializable
+        :return: json object
+        """
+        return json.dumps(response)
 
     class UnrecognizedOutputFormatException(Exception):
         def __init__(self, value='format not recognized.'):

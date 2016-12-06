@@ -18,7 +18,9 @@ class CustomDomainAdapter(DomainAdapter):
         super(CustomDomainAdapter, self).__init__(**kwargs)
 
         # we should specify a lot of additional parameters
-        self.trainer = CustomDomainTrainer(self.storage, **kwargs)
+        self.trainer = kwargs.get('trainer')
+        if not self.trainer:
+            self.trainer = CustomDomainTrainer(self.storage, **kwargs)
 
     def can_process(self, statement):
         """

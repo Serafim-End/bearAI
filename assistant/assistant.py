@@ -48,8 +48,17 @@ class Assistant(object):
         else:
             self.output = OutputFormatAdapter(**kwargs)
 
+        context_manager_class = kwargs.get('context_manager')
+        if context_manager_class:
+            self.context_manager_class = import_loading(context_manager_class)
+        else:
+            self.context_manager_class = ContextManager
+
         self.logic = MultiLogicAdapter(**kwargs)
         self.logger = kwargs.get('logger', logging.getLogger(__name__))
+
+        # initialize domain and intent trainers
+        self.initialize_trainers()
 
         self.storage.set_context(self)
         self.logic.set_context(self)
@@ -97,9 +106,36 @@ class Assistant(object):
 
         # get status of the task from db, session table
         # task = ??? data about the task (class Task)
-        task = self.storage.get_task()
+        task = self.storage.get_task(input_statement.customer)
+        context_manager = self.context_manager_class(
+            statement=input_statement,
+            task=task,
+            domain_trainer=self.domain_trainer,
+            intent_trainer=self.intent_trainer,
+            storage=self.storage
+        )
 
-        context_manager = ContextManager(statement=input_statement, task=task)
+        context_manager.process_task()
+
+        self.storage.set_task(task, input_statement.customer)
+        return self.output.process_response()
+
+    def initialize_trainers(self):
+        import cPickle as pickle
+
+        def load_model(filename, mode='r'):
+            try:
+                with open(filename, mode) as model_file:
+                    return pickle.load(model_file)
+            except Exception as e:
+                raise Exception(
+                    'error in model {} loading with message: {}'.format(
+                        filename, e.message
+                    )
+                )
+
+        self.domain_trainer = load_model('domain_trainer')
+        self.intent_trainer = load_model('intent_trainer')
 
     class InvalidAdapterException(Exception):
 
