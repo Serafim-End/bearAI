@@ -47,15 +47,6 @@ class CustomDomainAdapter(DomainAdapter):
         domain_cls = self.trainer.clf.predict(data)
         return Domain.objects.filter(id=domain_cls).first()
 
-    def update_domain_data(self, can_update):
-        """
-        obvious that some stuff with storage should be here
-        :param can_update:  boolean value that shows that
-        you have already gone through the customer and that domain is correct
-        :return: boolean that illustrates the status of db updates
-        """
-        pass
-
 
 class CustomDomainTrainer(DomainTrainer):
 

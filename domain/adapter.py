@@ -34,9 +34,6 @@ class DomainAdapter(LogicAdapter):
         """
         raise self.AdapterMethodNotImplemented()
 
-    def update_domain_data(self, can_update):
-        raise NotImplementedError()
-
     def set_trainer(self, trainer):
 
         if isinstance(trainer, Trainer):
