@@ -20,10 +20,16 @@ class CustomContextManager(ContextManager):
 
         self.domain_adapter = CustomDomainAdapter(
             trainer=kwargs.get('domain_trainer'),
-            storage=self.storage,
+            # storage=self.storage,
             **kwargs
         )
 
+        self.intent_adapter = CustomIntentAdapter(
+            self.task.domain,
+            trainer=kwargs.get('intent_trainer'),
+            # storage=self.storage,
+            **kwargs
+        )
         # do not think that it is normal
         self.kwargs = kwargs
 
@@ -44,14 +50,9 @@ class CustomContextManager(ContextManager):
                 self.task.domain = self.domain_adapter.process(self.statement)
 
         if not self.task.intent:
-            intent_adapter = CustomIntentAdapter(
-                self.task.domain,
-                trainer=self.kwargs.get('intent_trainer'),
-                storage=self.storage
-            )
 
-            if intent_adapter.can_process(self.statement):
-                self.task.intent = intent_adapter.process(self.statement)
+            if self.intent_adapter.can_process(self.statement):
+                self.task.intent = self.intent_adapter.process(self.statement)
             else:
                 # special process for scenario if we cannot process
                 pass

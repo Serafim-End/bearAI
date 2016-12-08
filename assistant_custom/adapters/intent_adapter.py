@@ -4,8 +4,8 @@ import pandas as pd
 
 from assistant.assistant import Assistant
 from assistant.utils.w2v_processing import (
-    w2v_transformation,  get_word2vec_model
-)
+    w2v_transformation,  get_word2vec_model,
+    morph)
 from intent.adapter import IntentAdapter
 from intent.models import Intent
 from intent.trainer import IntentTrainer
@@ -16,8 +16,10 @@ class CustomIntentAdapter(IntentAdapter):
         super(CustomIntentAdapter, self).__init__(domain, **kwargs)
 
         self.trainer = kwargs.get('trainer')
-        if not self.trainer:
-            self.trainer = CustomIntentTrainer(**kwargs)
+
+        self.trainer = CustomIntentTrainer(
+            **kwargs
+        )
 
     def can_process(self, statement):
         return True
@@ -31,20 +33,16 @@ class CustomIntentAdapter(IntentAdapter):
 
 class CustomIntentTrainer(IntentTrainer):
 
-    def __init__(self, storage, **kwargs):
-        self.storage = storage
+    def __init__(self, **kwargs):
+        self.storage = kwargs.get('storage')
+        super(CustomIntentTrainer, self).__init__(**kwargs)
 
-        assistant = Assistant()
-        self.clf = assistant.domain_trainer
-        self.word2vec_model = None
+        self.clf = kwargs.get('trainer')
 
-        self.word2vec_filename = kwargs.get('word2vec_filename')
+        self.morph = morph
+        self.word2vec_model = kwargs.get('word2vec_trainer')
+
         self.data_filename = kwargs.get('data_filename')
-
-        super(CustomIntentTrainer, self).__init__(
-            self.storage, **kwargs
-        )
-
         if self.data_filename:
             self.data = pd.read_csv(self.data_filename)
 
@@ -64,15 +62,6 @@ class CustomIntentTrainer(IntentTrainer):
         pass
 
     def preprocess_message(self, message):
-        if not self.word2vec_filename:
-            raise Exception('cannot find word2vec file with model')
-
-        if not self.word2vec_model:
-            self.word2vec_model = get_word2vec_model(
-                self.word2vec_filename,
-                binary=True
-            )
-
         if not self.word2vec_model:
             raise Exception('cannot find word2vec model')
 
