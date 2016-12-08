@@ -117,7 +117,7 @@ class Assistant(object):
             storage=self.storage
         )
 
-        context_manager.process_task()
+        task = context_manager.process_task()
 
         self.storage.set_task(task, input_statement.customer)
         return self.output.process_response(task)

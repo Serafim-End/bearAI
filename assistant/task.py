@@ -1,7 +1,14 @@
 # coding: utf-8
 
+import json
 
-class Task(object):
+
+class JSONSerializable(object):
+    def __repr__(self):
+        return json.dumps(self.__dict__)
+
+
+class Task(JSONSerializable):
 
     def __init__(self, domain=None, intent=None, parameters=None, status=True):
 
