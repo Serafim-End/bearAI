@@ -13,8 +13,6 @@ class CustomContextManager(ContextManager):
     def __init__(self, statement, task, **kwargs):
         super(CustomContextManager, self).__init__(statement, task)
 
-        self.status = kwargs.get('status')
-
         # about db
         self.storage = kwargs.get('storage')
         if not self.storage:
@@ -35,10 +33,6 @@ class CustomContextManager(ContextManager):
         status = True mean that status is active and false otherwise
         :return: precess the task
         """
-
-        # if task is finished we should not process it
-        if not self.status:
-            return self.task
 
         # if status is active it is mean that
         #  task have already had filled fields
@@ -75,4 +69,16 @@ class CustomContextManager(ContextManager):
                 # another special scenario if we cannot process it
                 pass
 
+        self.task.status = self.detect_task_status()
         return self.task
+
+    def detect_task_status(self):
+        if self.task.intent and self.task.domain:
+            if self.task.parameters:
+                flag = False
+                for k, v in self.task.parameters.iteritems():
+                    if v['is_obligatory'] and v['value'] is None:
+                        flag = True
+                if not flag:
+                    return False
+        return True

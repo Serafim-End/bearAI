@@ -61,6 +61,7 @@ class Assistant(object):
 
         # initialize domain and intent trainers
         self.initialize_trainers()
+        self.customer = kwargs.get('customer')
 
         self.storage.set_context(self)
         self.logic.set_context(self)
@@ -104,7 +105,7 @@ class Assistant(object):
             )
 
     def response(self, input_seq):
-        input_statement = self.input.process_input(input_seq)
+        input_statement = self.input.process_input(input_seq, self.customer)
 
         # get status of the task from db, session table
         # task = ??? data about the task (class Task)
@@ -121,7 +122,7 @@ class Assistant(object):
         context_manager.process_task()
 
         self.storage.set_task(task, input_statement.customer)
-        return self.output.process_response()
+        return self.output.process_response(task)
 
     def initialize_trainers(self, model_folder='templates'):
         import cPickle as pickle

@@ -76,16 +76,10 @@ class StorageAdapter(BaseStorageAdapter):
 
         s = Session() if not c_s.session.is_active else c_s.session
 
-        is_active = False
         if task.parameters:
             s.parameters = json.dumps(task.parameters)
 
-            while not is_active and task.parameters:
-                k, v = task.parameters.popitem()
-                if task.parameters[k]['value'] is None:
-                    is_active = True
-
-        s.is_active = is_active
+        s.is_active = task.status
         s.save()
 
         return True

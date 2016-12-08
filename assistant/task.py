@@ -3,7 +3,9 @@
 
 class Task(object):
 
-    def __init__(self, domain=None, intent=None, parameters=None):
+    def __init__(self, domain=None, intent=None, parameters=None, status=True):
+
+        self.status = status
         self.domain = domain
         self.intent = intent
 
