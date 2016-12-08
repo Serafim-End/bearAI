@@ -1,18 +1,19 @@
 # coding: utf-8
 
 import pandas as pd
+import pymorphy2
 
 from sklearn.ensemble import BaggingClassifier
 
 from assistant.assistant import Assistant
 from assistant.utils.module_loading import import_loading
+from assistant.utils.w2v_processing import morph
 from assistant.utils.w2v_processing import (
     w2v_transformation,
     get_word2vec_model
 )
 from domain.adapter import DomainAdapter
 from domain.models import Domain
-from domain.models import DomainData
 from domain.trainer import DomainTrainer
 
 
@@ -23,10 +24,10 @@ class CustomDomainAdapter(DomainAdapter):
 
         # we should specify a lot of additional parameters
         self.trainer = kwargs.get('trainer')
-        if not self.trainer:
-            self.trainer = CustomDomainTrainer(
-                **kwargs
-            )
+
+        self.trainer = CustomDomainTrainer(
+            **kwargs
+        )
 
     def can_process(self, statement):
         """
@@ -57,11 +58,11 @@ class CustomDomainTrainer(DomainTrainer):
         self.storage = kwargs.get('storage')
         super(CustomDomainTrainer, self).__init__(**kwargs)
 
-        assistant = Assistant()
-        self.clf = assistant.domain_trainer
-        self.word2vec_model = None
+        self.clf = kwargs.get('trainer')
 
-        self.word2vec_filename = kwargs.get('word2vec_filename')
+        self.morph = morph
+        self.word2vec_model = kwargs.get('word2vec_trainer')
+
         self.data_filename = kwargs.get('data_filename')
         if self.data_filename:
             self.data = pd.read_csv(self.data_filename)
@@ -87,15 +88,6 @@ class CustomDomainTrainer(DomainTrainer):
         self.clf = BaggingClassifier(n_estimators=100)
 
     def preprocess_message(self, message):
-        if not self.word2vec_filename:
-            raise Exception('cannot find word2vec file with model')
-
-        if not self.word2vec_model:
-            self.word2vec_model = get_word2vec_model(
-                self.word2vec_filename,
-                binary=True
-            )
-
         if not self.word2vec_model:
             raise Exception('cannot find word2vec model')
 
