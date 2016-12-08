@@ -1,5 +1,6 @@
 # coding: utf-8
 
+import os
 import logging
 
 from adapters.storage.storage_adapter import StorageAdapter
@@ -122,7 +123,7 @@ class Assistant(object):
         self.storage.set_task(task, input_statement.customer)
         return self.output.process_response()
 
-    def initialize_trainers(self):
+    def initialize_trainers(self, model_folder='templates'):
         import cPickle as pickle
 
         def load_model(filename, mode='r'):
@@ -136,9 +137,15 @@ class Assistant(object):
                     )
                 )
 
-        self.domain_trainer = load_model('templates/domain_trainer')
-        self.word2vec_trainer = get_word2vec_model('templates/word2vec_trainer')
-        self.intent_trainer = load_model('templates/intent_trainer')
+        _j = lambda model_name: os.path.join(model_folder, model_name)
+
+        self.domain_trainer = load_model(_j('domain_trainer'))
+        self.intent_trainer = load_model(_j('intent_trainer'))
+
+        self.word2vec_trainer = get_word2vec_model(
+            'web.model.bin.gz',
+            binary=True
+        )
 
     class InvalidAdapterException(Exception):
 

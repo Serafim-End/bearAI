@@ -4,7 +4,7 @@ import gensim
 import numpy as np
 import pymorphy2
 
-
+morph = pymorphy2.MorphAnalyzer()
 
 
 def w2v_transformation(data, labels, word2vec_model):
@@ -22,7 +22,6 @@ def w2v_transformation(data, labels, word2vec_model):
         'NOUN': '_S',
         'INFN': '_V',
     }
-    morph = pymorphy2.MorphAnalyzer()
 
     train_vectors = []
     train_labels = []
