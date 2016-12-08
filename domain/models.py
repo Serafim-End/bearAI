@@ -22,7 +22,7 @@ class Domain(models.Model):
 @python_2_unicode_compatible
 class DomainData(models.Model):
 
-    value = models.IntegerField()
+    value = models.IntegerField(default=-1)
     text = models.TextField()
 
     def __str__(self):

@@ -8,10 +8,8 @@ from adapters.input.input_adapter import InputAdapter
 from adapters.output.output_format_adapter import OutputFormatAdapter
 from adapters.logic.multi_adapter import MultiLogicAdapter
 from adapters.logic.logic_adapter import LogicAdapter
-from assistant.utils.w2v_processing import get_word2vec_model
 from context_manager import ContextManager
-from task import Task
-
+from utils.w2v_processing import get_word2vec_model
 from utils.module_loading import import_loading
 
 
@@ -144,7 +142,7 @@ class Assistant(object):
         self.intent_trainer = load_model(_j('intent_trainer'))
 
         self.word2vec_trainer = get_word2vec_model(
-            'web.model.bin.gz',
+            _j('web.model.bin.gz'),
             binary=True
         )
 

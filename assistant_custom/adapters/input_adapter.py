@@ -23,8 +23,6 @@ class CustomInputAdapter(InputAdapter):
         if not isinstance(input_sequence, (str, unicode)):
             raise self.InputAdapterError()
 
-        customer = Customer.objects.get_or_create(id=customer.id)
-
         # text processing
 
         message = ' '.join(

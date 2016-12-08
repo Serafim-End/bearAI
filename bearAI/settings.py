@@ -35,6 +35,15 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'assistant_custom',
+    'customer',
+    'developer',
+    'agent',
+    'domain',
+    'intent',
+    'slots',
+    'session',
+    'telegram_bot',
     'assistant.conversation',
     'django.contrib.admin',
     'django.contrib.auth',
