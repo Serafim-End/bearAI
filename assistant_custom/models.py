@@ -10,4 +10,5 @@ class Customer(User):
     """
     here possible to user inheritance of User class
     """
-    agent = models.ForeignKey(Agent)
+    # agent = models.ForeignKey(Agent)
+    pass

@@ -7,6 +7,7 @@ from adapters.input.input_adapter import InputAdapter
 from adapters.output.output_format_adapter import OutputFormatAdapter
 from adapters.logic.multi_adapter import MultiLogicAdapter
 from adapters.logic.logic_adapter import LogicAdapter
+from assistant.utils.w2v_processing import get_word2vec_model
 from context_manager import ContextManager
 from task import Task
 
@@ -135,9 +136,9 @@ class Assistant(object):
                     )
                 )
 
-        self.domain_trainer = load_model('domain_trainer')
-        self.word2vec_trainer = load_model('word2vec_trainer')
-        self.intent_trainer = load_model('intent_trainer')
+        self.domain_trainer = load_model('templates/domain_trainer')
+        self.word2vec_trainer = get_word2vec_model('templates/word2vec_trainer')
+        self.intent_trainer = load_model('templates/intent_trainer')
 
     class InvalidAdapterException(Exception):
 
