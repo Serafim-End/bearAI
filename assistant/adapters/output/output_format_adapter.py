@@ -26,7 +26,7 @@ class OutputFormatAdapter(OutputAdapter):
         :param response: should be serializable
         :return: json object
         """
-        return json.dumps(response)
+        return response.__repr__()
 
     class UnrecognizedOutputFormatException(Exception):
         def __init__(self, value='format not recognized.'):
