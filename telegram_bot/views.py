@@ -9,7 +9,6 @@ import urllib2
 import telepot
 from django.http import HttpResponse
 from rest_framework import views
-import operator
 
 from agent.models import Agent
 from assistant.adapters.storage.storage_adapter import StorageAdapter
@@ -19,7 +18,6 @@ from customer.models import Customer
 from developer.models import Developer
 from intent.models import Intent
 from session.models import CustomerSession, Session
-from telegram_bot.message_handler import MessageHandler
 from telegram_bot.settings import (
     PRIME_APIKEY, TELEGRAM_BOT_TOKEN,
     RESTAURANT_API_URL
@@ -137,7 +135,6 @@ class TelegramBotView(views.APIView):
         res = ccm.process_task()
         print res
         return HttpResponse('Oh yeag')
-
 
     def post(self, request, *args, **kwargs):
         payload = request.data
