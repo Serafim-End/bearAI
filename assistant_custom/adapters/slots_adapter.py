@@ -22,7 +22,9 @@ class CustomSlotFillingAdapter(SlotFillingAdapter):
         self.parameters = parameters
 
     def can_process(self, statement):
-        return True
+        if statement.message:
+            return True
+        return False
 
     def process(self, statement):
         """
