@@ -24,10 +24,7 @@ class TelegramBotView(views.APIView):
         customer.save()
         return customer
 
-    def get(self, request, *args, **kwargs):
-
-        telegram_user_id = 1
-        message_default = 'забронировать ресторан Воронеж на завтра у окна'.decode('utf-8')
+    def process_bear(self, message, telegram_user_id):
 
         customer = Customer.objects.filter(username=telegram_user_id).last()
         if not customer:
@@ -41,5 +38,21 @@ class TelegramBotView(views.APIView):
             customer=customer,
         )
 
+        return assistant_instance.response(message)
+
+    def get(self, request, *args, **kwargs):
+
+        telegram_user_id = 1
+        message_default = 'забронировать ресторан Воронеж на завтра у окна'.decode('utf-8')
         message = request.GET.get('message', message_default)
-        return JsonResponse(assistant_instance.response(message))
+
+        # in this place can be another function, but with the same structure
+
+        response = self.process_bear(
+            message=message,
+            telegram_user_id=telegram_user_id
+        )
+
+        # further (in continuous development)
+        #  please process structure like serialized task object
+        return JsonResponse(response)
