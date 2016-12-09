@@ -1,4 +1,5 @@
 # coding: utf-8
+
 import json
 import re
 
@@ -47,55 +48,42 @@ class CustomSlotFillingAdapter(SlotFillingAdapter):
         :return:
         """
 
-        def try_json(myjson):
-            try:
-                return json.loads(myjson)
-            except ValueError, e:
-                return None
-
         def load_parameters(value):
-            pos_json = try_json(value)
-            if pos_json:
-                return pos_json
-            else:
+            try:
+                return json.loads(value)
+            except ValueError:
                 return value
 
         words = statement.message.split(' ')
 
-        # should be a list of Parameter
+        # should be a list of Parameter(s)
         base_parameters = Parameter.objects.filter(intent=self.intent).all()
 
         if not self.parameters:
-            self.parameters = []
+            self.parameters = [{}] * len(base_parameters)
 
-        dict_base_parameters = []
-        for parameter in base_parameters:
-            par_dict = {
-                'name': parameter.name,
-                'is_obligatory': parameter.is_obligatory,
-                'value': load_parameters(parameter.value)
-            }
-            self.parameters.append({})
-            dict_base_parameters.append(par_dict)
+        for i, p in enumerate(base_parameters):
+            value = load_parameters(p.value)
 
-        for k, v in enumerate(dict_base_parameters):
-            value = v['value']
-            self.parameters[k]['name'] = v['name']
-            self.parameters[k]['is_obligatory'] = v['is_obligatory']
+            self.parameters[i]['name'] = p.name
+            self.parameters[i]['is_obligatory'] = p.is_obligatory
+
             for t, func in {self.FLOAT: self._detect_float,
                             self.DIGIT: self._detect_digit}.iteritems():
                 if value == t:
                     prm_value, words = func(words)
                     if prm_value:
-                        self.parameters[k]['value'] = prm_value
+                        self.parameters[i]['value'] = prm_value
+
             if value == self.DATETIME:
                 prm_value, words = self._detect_datetime(statement.message)
                 if prm_value:
-                    self.parameters[k]['value'] = prm_value.isoformat()
+                    self.parameters[i]['value'] = prm_value.isoformat()
+
             if isinstance(value, dict):
                 prm_value, words = self._detect_name(value, words)
                 if prm_value:
-                    self.parameters[k]['value'] = prm_value
+                    self.parameters[i]['value'] = prm_value
         return self.parameters
 
     def _detect_name(self, value, words):
@@ -118,7 +106,6 @@ class CustomSlotFillingAdapter(SlotFillingAdapter):
     def _detect_digit(self, words):
         for w in words:
             if w.isdigit():
-                # return w, words.pop(w) вероятно ошибочно
                 words.remove(w)
                 return w, words
         return None, words
@@ -133,7 +120,8 @@ class CustomSlotFillingAdapter(SlotFillingAdapter):
                     flag = False
                     break
             if flag:
-                return w, words.pop(w)
+                words.remove(w)
+                return w, words
         return None, words
 
     def _detect_datetime(self, words):
@@ -193,6 +181,7 @@ class CustomSlotFillingAdapter(SlotFillingAdapter):
 
         text = words.lower()
         n = datetime.utcnow()
+        wl = words.split(' ')
 
         digit_date = re.search('\d{1,2}[\.|: ;мю,]\d{1,2}', text)
         if digit_date:
@@ -203,35 +192,29 @@ class CustomSlotFillingAdapter(SlotFillingAdapter):
             except:
                 d_time = None
 
-            return d_time, words.split(' ')
+            return d_time, wl
 
         _current_month_r = get_text_date(text, n)
         if _current_month_r:
-            return _current_month_r, words.split(' ')
+            return _current_month_r, wl
 
         _next_month_r = get_text_date(text,
                                       datetime.utcnow() + timedelta(days=10))
         if _next_month_r:
-            return _next_month_r, words.split(' ')
+            return _next_month_r, wl
 
         text = text.encode('utf-8')
         for k in when_nearest_tuple:
             for w in k[0]:
                 if text.find(w) > -1:
-                    return n + timedelta(days=k[1]), words.split(' ')
+                    return n + timedelta(days=k[1]), wl
 
         for k, ws in when_week.iteritems():
             for w in ws:
                 if text.find(w) > -1:
                     week_day = n.isoweekday()
                     if week_day > k:
-                        return (
-                            n + timedelta(days=(7 - week_day + 1 + k)),
-                            words.split(' ')
-                        )
+                        return n + timedelta(days=(7 - week_day + 1 + k)), wl
                     else:
-                        return (
-                            n + timedelta(days=(k - week_day + 1)),
-                            words.split(' ')
-                        )
-        return n, words.split(' ')
+                        return n + timedelta(days=(k - week_day + 1)), wl
+        return n, wl

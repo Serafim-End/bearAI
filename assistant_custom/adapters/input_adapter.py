@@ -32,9 +32,9 @@ class CustomInputAdapter(InputAdapter):
             ]
         )
 
-        st = Statement(customer=customer, message=message)
-        st.save()
-        return st
+        statement = Statement(customer=customer, message=message)
+        statement.save()
+        return statement
 
 
 

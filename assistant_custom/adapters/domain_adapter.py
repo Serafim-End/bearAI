@@ -18,7 +18,6 @@ from domain.trainer import DomainTrainer
 
 
 class CustomDomainAdapter(DomainAdapter):
-
     def __init__(self, **kwargs):
         super(CustomDomainAdapter, self).__init__(**kwargs)
 
@@ -52,13 +51,11 @@ class CustomDomainAdapter(DomainAdapter):
 
 
 class CustomDomainTrainer(DomainTrainer):
-
-    def __init__(self,  **kwargs):
-        self.storage = kwargs.get('storage')
+    def __init__(self, **kwargs):
         super(CustomDomainTrainer, self).__init__(**kwargs)
 
+        self.storage = kwargs.get('storage')
         self.clf = kwargs.get('trainer')
-
         self.morph = morph
         self.word2vec_model = kwargs.get('word2vec_trainer')
 
@@ -87,9 +84,8 @@ class CustomDomainTrainer(DomainTrainer):
         self.clf = BaggingClassifier(n_estimators=100)
 
     def preprocess_message(self, message):
-        # if not self.word2vec_model:
-        #    raise Exception('cannot find word2vec model')
+        if not self.word2vec_model:
+            raise Exception('cannot find word2vec model')
 
-        # w2v_data, _ = w2v_transformation([message], [0], self.word2vec_model)
-        w2v_data = numpy.random.rand(500)
+        w2v_data, _ = w2v_transformation([message], [0], self.word2vec_model)
         return w2v_data

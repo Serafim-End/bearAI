@@ -1,11 +1,8 @@
 # coding: utf-8
-import numpy
+
 import pandas as pd
 
-from assistant.assistant import Assistant
-from assistant.utils.w2v_processing import (
-    w2v_transformation,  get_word2vec_model,
-    morph)
+from assistant.utils.w2v_processing import w2v_transformation, morph
 from intent.adapter import IntentAdapter
 from intent.models import Intent
 from intent.trainer import IntentTrainer
@@ -61,10 +58,9 @@ class CustomIntentTrainer(IntentTrainer):
         pass
 
     def preprocess_message(self, message):
-        # if not self.word2vec_model:
-        #     raise Exception('cannot find word2vec model')
-        #
-        # w2v_data, _ = w2v_transformation([message], [0], self.word2vec_model)
+        if not self.word2vec_model:
+            raise Exception('cannot find word2vec model')
 
-        w2v_data = numpy.random.rand(500)
+        w2v_data, _ = w2v_transformation([message], [0], self.word2vec_model)
+
         return w2v_data
