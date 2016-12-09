@@ -5,9 +5,11 @@ from ..adapter import Adapter
 
 from developer.models import Developer
 from agent.serializers import AgentSerializer
+from domain.models import Domain
 from domain.serializers import DomainSerializer
-from intent.serializers import IntentSerializer
 from slots.serializers import ParameterSerializer
+from intent.serializers import IntentSerializer
+from intent.models import Intent
 from intent.models import IntentData
 from intent.serializers import IntentDataSerializer
 

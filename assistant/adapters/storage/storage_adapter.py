@@ -31,6 +31,10 @@ class StorageAdapter(BaseStorageAdapter):
             msg='Instance was not saved'
         )
 
+    def get_object(self, cls, **kwargs):
+        cls = self.get_class(cls)
+        return cls.objects.filter(**kwargs).first()
+
     def get_task(self, customer):
         """
         get task object from Session table
@@ -46,7 +50,7 @@ class StorageAdapter(BaseStorageAdapter):
         if not statement:
             return t
 
-        c_session = CustomerSession.objects.filter(customer=customer).last()
+        c_session = customer.session_set.last()
         if not c_session.session.is_active:
             return t
 
@@ -74,7 +78,7 @@ class StorageAdapter(BaseStorageAdapter):
         if not task or not customer:
             return False
 
-        c_s = CustomerSession.objects.filter(customer=customer).last()
+        c_s = customer.session_set.last()
         if not c_s:
             return False
 
