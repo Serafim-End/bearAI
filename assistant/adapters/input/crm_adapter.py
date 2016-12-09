@@ -3,11 +3,9 @@
 
 import json
 
-from domain.models import Domain
 from input_adapter import InputDevAdapter
 
 from assistant.adapters.storage.storage_adapter import StorageAdapter
-from intent.models import Intent
 
 
 class CRMAdapter(InputDevAdapter):
@@ -18,12 +16,12 @@ class CRMAdapter(InputDevAdapter):
         self.file_path = file_path
         self.storage_adapter = StorageAdapter()
 
-    def load_json_file(self):
-        with open(self.file_path) as data_file:
-            return json.load(data_file)
+    def process_input(self, **kwargs):
 
-    def process_input(self):
-        data = self.load_json_file()
+        agent_name = kwargs.get('agent_name')
+
+        with open(self.file_path) as data_file:
+            data = json.load(data_file)
 
         developer, created = self.storage_adapter.func_object(
             'Developer', ['objects', 'get_or_create']
@@ -31,11 +29,16 @@ class CRMAdapter(InputDevAdapter):
 
         agent = self.storage_adapter.save(
             'AgentSerializer',
-            data={'developer': developer.pk, 'username': 'michaelborisov'}
+            data={
+                'developer': developer.pk,
+                'username': agent_name if agent_name else 'username'
+            }
         )
 
         for domain in data['domain']:
-            domain_ser = Domain.objects.filter(name=domain['name']).first()
+            domain_ser = self.storage_adapter.get_object(
+                'Domain', name=domain['name']
+            )
             if not domain_ser:
                 domain_ser = self.storage_adapter.save(
                     'DomainSerializer',
@@ -43,7 +46,10 @@ class CRMAdapter(InputDevAdapter):
                 )
 
             for intent in domain['intent']:
-                intent_ser = Intent.objects.filter(name=intent['name']).first()
+                intent_ser = self.storage_adapter.get_object(
+                    'Intent', name=intent['name']
+                )
+
                 if not intent_ser:
                     intent_ser = self.storage_adapter.save(
                         'IntentSerializer',
