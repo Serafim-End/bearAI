@@ -17,13 +17,21 @@ from slots.models import Parameter
 
 @python_2_unicode_compatible
 class Session(models.Model):
+    # miserable default values, refactor it
 
     domain = models.ForeignKey(
         Domain, default=lambda: Domain.objects.get(id=1)
     )
+
     intent = models.ForeignKey(
         Intent, default=lambda: Intent.objects.get(id=1)
     )
+
+    customer = models.ForeignKey(
+        Customer, on_delete=models.CASCADE,
+        default=lambda: Customer.objects.get(id=1)
+    )
+
     is_active = models.BooleanField()
     parameters = models.TextField(default=None)
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
