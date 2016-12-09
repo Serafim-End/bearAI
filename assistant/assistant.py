@@ -145,11 +145,10 @@ class Assistant(object):
         self.domain_trainer = load_model(_j('domain_trainer'))
         self.intent_trainer = load_model(_j('intent_trainer'))
 
-        # self.word2vec_trainer = get_word2vec_model(
-        #     _j('word2vec_trainer.bin.gz'),
-        #     binary=True
-        # )
-        self.word2vec_trainer = numpy.random.rand(500)
+        self.word2vec_trainer = get_word2vec_model(
+            _j('word2vec_trainer.bin.gz'),
+            binary=True
+        )
 
     class InvalidAdapterException(Exception):
 
