@@ -59,11 +59,11 @@ class StorageAdapter(BaseStorageAdapter):
         except:
             parameters = []
 
-        for k, v in enumerate(parameters):
+        for i, v in enumerate(parameters):
             # Example of vocabulary
             # {'key1': {'value': 'some_value', 'is_obligatory': True}}
             # k - 'key1' and v - {'value': 'some_value', 'is_obligatory': True}
-            t.parameters[k] = v
+            t.parameters[i] = v
 
         t.intent = c_session.session.intent
         t.domain = t.intent.domain
