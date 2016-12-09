@@ -3,12 +3,7 @@
 import json
 
 
-class JSONSerializable(object):
-    def __repr__(self):
-        return json.dumps(self.__dict__)
-
-
-class Task(JSONSerializable):
+class Task(object):
 
     def __init__(self, domain=None, intent=None, parameters=None, status=True):
 
@@ -30,3 +25,12 @@ class Task(JSONSerializable):
             if self.parameters[k]['value'] is not None:
                 return self.parameters
         return None
+
+    def __repr__(self):
+        return json.dumps({
+                'domain': self.domain.id,
+                'intent': self.intent.id,
+                'status': self.status,
+                'parameter': self.parameters
+            }
+        )

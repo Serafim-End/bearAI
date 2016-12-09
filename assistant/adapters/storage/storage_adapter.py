@@ -50,8 +50,12 @@ class StorageAdapter(BaseStorageAdapter):
         if not c_session.session.is_active:
             return t
 
-        parameters = json.loads(c_session.session.parameters)
-        for k, v in parameters.iteritems():
+        try:
+            parameters = json.loads(c_session.session.parameters)
+        except:
+            parameters = []
+
+        for k, v in enumerate(parameters):
             # Example of vocabulary
             # {'key1': {'value': 'some_value', 'is_obligatory': True}}
             # k - 'key1' and v - {'value': 'some_value', 'is_obligatory': True}

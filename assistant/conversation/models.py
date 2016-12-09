@@ -12,8 +12,12 @@ from intent.models import Intent
 @python_2_unicode_compatible
 class Statement(models.Model):
 
-    domain = models.ForeignKey(Domain, default=None)
-    intent = models.ForeignKey(Intent, default=None)
+    domain = models.ForeignKey(
+        Domain, default=lambda: Domain.objects.get(id=1)
+    )
+    intent = models.ForeignKey(
+        Intent, default=lambda: Intent.objects.get(id=1)
+    )
     customer = models.ForeignKey(Customer)
     message = models.CharField(
         max_length=300,

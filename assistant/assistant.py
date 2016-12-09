@@ -3,13 +3,17 @@
 import os
 import logging
 
+import numpy
+
 from adapters.storage.storage_adapter import StorageAdapter
 from adapters.input.input_adapter import InputAdapter
 from adapters.output.output_format_adapter import OutputFormatAdapter
 from adapters.logic.multi_adapter import MultiLogicAdapter
 from adapters.logic.logic_adapter import LogicAdapter
-from context_manager import ContextManager
 from utils.w2v_processing import get_word2vec_model
+from context_manager import ContextManager
+from task import Task
+
 from utils.module_loading import import_loading
 
 
@@ -141,10 +145,11 @@ class Assistant(object):
         self.domain_trainer = load_model(_j('domain_trainer'))
         self.intent_trainer = load_model(_j('intent_trainer'))
 
-        self.word2vec_trainer = get_word2vec_model(
-            _j('web.model.bin.gz'),
-            binary=True
-        )
+        # self.word2vec_trainer = get_word2vec_model(
+        #     _j('word2vec_trainer.bin.gz'),
+        #     binary=True
+        # )
+        self.word2vec_trainer = numpy.random.rand(500)
 
     class InvalidAdapterException(Exception):
 
