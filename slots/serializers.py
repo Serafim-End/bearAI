@@ -9,4 +9,4 @@ class ParameterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Parameter
-        fields = ('intent', 'is_obligatory', 'name')
+        fields = ('intent', 'is_obligatory', 'name', 'value')

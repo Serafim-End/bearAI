@@ -18,8 +18,12 @@ from slots.models import Parameter
 @python_2_unicode_compatible
 class Session(models.Model):
 
-    domain = models.ForeignKey(Domain)
-    intent = models.ForeignKey(Intent)
+    domain = models.ForeignKey(
+        Domain, default=lambda: Domain.objects.get(id=1)
+    )
+    intent = models.ForeignKey(
+        Intent, default=lambda: Intent.objects.get(id=1)
+    )
     is_active = models.BooleanField()
     parameters = models.TextField(default=None)
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)

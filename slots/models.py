@@ -12,6 +12,7 @@ class Parameter(models.Model):
 
     intent = models.ForeignKey(Intent)
     is_obligatory = models.BooleanField()
+    value = models.TextField(default=None)
     name = models.CharField(max_length=150, blank=False)
 
     def __str__(self):
@@ -21,8 +22,8 @@ class Parameter(models.Model):
 @python_2_unicode_compatible
 class ParameterData(models.Model):
 
-    text = models.TextField()
-    parameters = models.TextField()
+    text = models.TextField(default=None)
+    parameters = models.TextField(default=None)
 
     def __str__(self):
         pass

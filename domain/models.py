@@ -23,7 +23,7 @@ class Domain(models.Model):
 class DomainData(models.Model):
 
     value = models.IntegerField(default=-1)
-    text = models.TextField()
+    text = models.TextField(default=None)
 
     def __str__(self):
         return ', '.join([d.name for d in self.domain])
