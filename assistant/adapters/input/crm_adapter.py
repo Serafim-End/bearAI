@@ -3,9 +3,11 @@
 
 import json
 
+from domain.models import Domain
 from input_adapter import InputDevAdapter
 
 from assistant.adapters.storage.storage_adapter import StorageAdapter
+from intent.models import Intent
 
 
 class CRMAdapter(InputDevAdapter):
@@ -29,28 +31,32 @@ class CRMAdapter(InputDevAdapter):
 
         agent = self.storage_adapter.save(
             'AgentSerializer',
-            data={'developer': developer.pk}
+            data={'developer': developer.pk, 'username': 'michaelborisov'}
         )
 
         for domain in data['domain']:
-            domain_ser = self.storage_adapter.save(
-                'DomainSerializer',
-                data={'agent': agent.pk, 'name': domain['name']}
-            )
-
-            for intent in domain['intent']:
-                intent_ser = self.storage_adapter.save(
-                    'IntentSerializer',
-                    data={'domain': domain_ser.pk, 'name': intent['name']}
+            domain_ser = Domain.objects.filter(name=domain['name']).first()
+            if not domain_ser:
+                domain_ser = self.storage_adapter.save(
+                    'DomainSerializer',
+                    data={'agent': agent.pk, 'name': domain['name']}
                 )
 
+            for intent in domain['intent']:
+                intent_ser = Intent.objects.filter(name=intent['name']).first()
+                if not intent_ser:
+                    intent_ser = self.storage_adapter.save(
+                        'IntentSerializer',
+                        data={'domain': domain_ser.pk, 'name': intent['name']}
+                    )
+
                 for parameter in intent['parameters']:
-                    for k, v in parameter.iteritems():
-                        self.storage_adapter.save(
-                            'ParameterSerializer',
-                            data={
-                                'intent': intent_ser.pk,
-                                'name': k,
-                                'is_obligatory': bool(v)
-                            }
-                        )
+                    self.storage_adapter.save(
+                        'ParameterSerializer',
+                        data={
+                            'intent': intent_ser.pk,
+                            'name': parameter['name'],
+                            'is_obligatory': bool(parameter['is_obligatory']),
+                            'value': parameter['value']
+                        }
+                    )
