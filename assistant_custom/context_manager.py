@@ -75,8 +75,8 @@ class CustomContextManager(ContextManager):
         if self.task.intent and self.task.domain:
             if self.task.parameters:
                 flag = False
-                for k, v in self.task.parameters.iteritems():
-                    if v['is_obligatory'] and v['value'] is None:
+                for k, v in enumerate(self.task.parameters):
+                    if v['is_obligatory'] and v.get('value') is None:
                         flag = True
                 if not flag:
                     return False

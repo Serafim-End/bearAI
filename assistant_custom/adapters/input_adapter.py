@@ -28,11 +28,13 @@ class CustomInputAdapter(InputAdapter):
         message = ' '.join(
             [
                 morph.parse(w)[0].normal_form
-                for w in input_sequence.split(' ') if not w.isdigit()
+                for w in input_sequence.split(' ')
             ]
         )
 
-        return Statement(customer=customer, message=message)
+        st = Statement(customer=customer, message=message)
+        st.save()
+        return st
 
 
 

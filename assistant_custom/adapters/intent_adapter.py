@@ -1,5 +1,5 @@
 # coding: utf-8
-
+import numpy
 import pandas as pd
 
 from assistant.assistant import Assistant
@@ -27,8 +27,7 @@ class CustomIntentAdapter(IntentAdapter):
     def process(self, statement):
         data = self.trainer.preprocess_message(statement.message)
         pred_intent_id = self.trainer.clf.predict(data)
-        return pred_intent_id[0]
-        # return Intent.objects.filter(id=pred_intent_id).first()
+        return Intent.objects.filter(id=pred_intent_id).first()
 
 
 class CustomIntentTrainer(IntentTrainer):
@@ -62,8 +61,10 @@ class CustomIntentTrainer(IntentTrainer):
         pass
 
     def preprocess_message(self, message):
-        if not self.word2vec_model:
-            raise Exception('cannot find word2vec model')
+        # if not self.word2vec_model:
+        #     raise Exception('cannot find word2vec model')
+        #
+        # w2v_data, _ = w2v_transformation([message], [0], self.word2vec_model)
 
-        w2v_data, _ = w2v_transformation([message], [0], self.word2vec_model)
+        w2v_data = numpy.random.rand(500)
         return w2v_data

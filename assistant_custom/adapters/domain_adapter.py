@@ -1,5 +1,5 @@
 # coding: utf-8
-
+import numpy
 import pandas as pd
 import pymorphy2
 
@@ -48,8 +48,7 @@ class CustomDomainAdapter(DomainAdapter):
         """
         data = self.trainer.preprocess_message(statement.message)
         domain_cls = self.trainer.clf.predict(data)
-        return domain_cls[0]
-        # return Domain.objects.filter(id=domain_cls).first()
+        return Domain.objects.filter(id=domain_cls).first()
 
 
 class CustomDomainTrainer(DomainTrainer):
@@ -88,8 +87,9 @@ class CustomDomainTrainer(DomainTrainer):
         self.clf = BaggingClassifier(n_estimators=100)
 
     def preprocess_message(self, message):
-        if not self.word2vec_model:
-            raise Exception('cannot find word2vec model')
+        # if not self.word2vec_model:
+        #    raise Exception('cannot find word2vec model')
 
-        w2v_data, _ = w2v_transformation([message], [0], self.word2vec_model)
+        # w2v_data, _ = w2v_transformation([message], [0], self.word2vec_model)
+        w2v_data = numpy.random.rand(500)
         return w2v_data
