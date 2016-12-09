@@ -75,7 +75,8 @@ class CustomSlotFillingAdapter(SlotFillingAdapter):
                 'is_obligatory': parameter.is_obligatory,
                 'value': load_parameters(parameter.value)
             }
-            self.parameters.append({})
+            if len(self.parameters) < len(base_parameters):
+                self.parameters.append({})
             dict_base_parameters.append(par_dict)
 
         for k, v in enumerate(dict_base_parameters):
