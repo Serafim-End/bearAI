@@ -45,10 +45,7 @@ class TelegramBotView(views.APIView):
             email='michaelborisovha@gmail.com'
         ).first()
 
-        customer_session = CustomerSession.objects.filter(
-            customer=customer
-        ).last()
-
+        customer_session = customer.session_set.last()
         if not customer_session.session.is_active:
             session = Session(
                 intent=Intent.objects.filter(name='Бронирование').first(),
@@ -57,9 +54,6 @@ class TelegramBotView(views.APIView):
             session.load_parameters()
             session.save()
 
-            customer_session = CustomerSession(
-                customer=customer, session=session
-            )
             customer_session.save()
 
         parameters = json.loads(customer_session.session.parameters)
