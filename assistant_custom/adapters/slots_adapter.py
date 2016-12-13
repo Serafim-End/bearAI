@@ -103,12 +103,14 @@ class CustomSlotFillingAdapter(SlotFillingAdapter):
         def get_value(names, candidates):
             for sinonym in names:
                 for w in candidates:
-                    if w.find(sinonym) > -1:
+                    if w.lower().find(sinonym.lower()) > -1:
                         return w
             return None
 
         for n, ren in value.iteritems():
             names = [n] + list(ren)
+            if '' in names:
+                names.remove('')
             candidate = get_value(names, words)
             if candidate:
                 words.remove(candidate)
