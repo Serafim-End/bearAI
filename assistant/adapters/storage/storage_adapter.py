@@ -31,6 +31,10 @@ class StorageAdapter(BaseStorageAdapter):
             msg='Instance was not saved'
         )
 
+    def get_object(self, cls, **kwargs):
+        cls = self.get_class(cls)
+        return cls.objects.filter(**kwargs).first()
+
     def get_task(self, customer):
         """
         get task object from Session table

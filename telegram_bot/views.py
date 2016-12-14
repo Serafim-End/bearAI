@@ -8,16 +8,20 @@ import urllib2
 
 import telepot
 from django.http import HttpResponse
+from django.http.response import JsonResponse
 from rest_framework import views
 
 from agent.models import Agent
+from assistant.adapters.input.crm_adapter import CRMAdapter
 from assistant.adapters.storage.storage_adapter import StorageAdapter
+from assistant.assistant import Assistant
 from assistant.conversation.models import Statement
 from assistant_custom.context_manager import CustomContextManager
 from customer.models import Customer
 from developer.models import Developer
 from intent.models import Intent
 from session.models import CustomerSession, Session
+from slots.models import Parameter
 from telegram_bot.settings import (
     PRIME_APIKEY, TELEGRAM_BOT_TOKEN,
     RESTAURANT_API_URL
@@ -31,8 +35,7 @@ class TelegramBotView(views.APIView):
         return ''
 
     def add_new_user(self, tuid):
-        dev = Developer(account_status="LOW")
-        dev.save()
+        dev = Developer.objects.last()
         agent = Agent(developer=dev, username='michael')
         agent.save()
         customer = Customer(agent=agent, username=tuid)
@@ -116,25 +119,29 @@ class TelegramBotView(views.APIView):
     def get(self, request, *args, **kwargs):
         message = request.GET.get('message', '')
         #self.proceed_message_inside_session(message)
-        tuid = 72772783# payload['message']['from']['id']
+        tuid = 72772783  # payload['message']['from']['id']
         customer = Customer.objects.filter(username=tuid).last()
         if not customer:
             customer = self.add_new_user(tuid)
-        # chat_id = payload['message']['chat']['id']
-        cmd = message# payload['message'].get('text')
-        statement = Statement(
-            customer=customer, message=cmd
+        # if not customer:
+        #     customer = self.add_new_user(tuid)
+        # # chat_id = payload['message']['chat']['id']
+        # cmd = message # payload['message'].get('text')
+        assistant_instance = Assistant(
+            input_class='assistant_custom.adapters.input_adapter.CustomInputAdapter',
+            storage_class='assistant.adapters.storage.storage_adapter.StorageAdapter',
+            output_class='assistant.adapters.output.output_format_adapter.OutputFormatAdapter',
+            context_manager='assistant_custom.context_manager.CustomContextManager',
+            customer=customer,
         )
-        statement.save()
 
-        task = StorageAdapter().get_task(customer)
-        ccm = CustomContextManager(
-            statement, task, status='True',
-            word2vec_filename='/Users/michaelborisov/Desktop/bot/templates/word2vec_trainer'
-        )
-        res = ccm.process_task()
-        print res
-        return HttpResponse('Oh yeag')
+        message = request.GET.get('message')
+        # message = 'забронируйте столик в erwin'.decode('utf-8')
+        return HttpResponse(assistant_instance.response(message))
+        # Parameter.objects.all().delete()
+        # adapter = CRMAdapter('/Users/michaelborisov/Desktop/another_bot/bot/assistant_custom/prime.config')
+        # adapter.process_input()
+
 
     def post(self, request, *args, **kwargs):
         payload = request.data

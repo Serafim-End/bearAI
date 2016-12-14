@@ -26,7 +26,12 @@ class OutputFormatAdapter(OutputAdapter):
         :param response: should be serializable
         :return: json object
         """
-        return response.__repr__()
+        resp_dict = response.__repr__()
+        resp_dict['domain'] = (resp_dict['domain'].id if
+                               resp_dict['domain'] else 0)
+        resp_dict['intent'] = (resp_dict['intent'].id if
+                               resp_dict['intent'] else 0)
+        return resp_dict
 
     class UnrecognizedOutputFormatException(Exception):
         def __init__(self, value='format not recognized.'):

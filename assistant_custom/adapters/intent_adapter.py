@@ -61,10 +61,10 @@ class CustomIntentTrainer(IntentTrainer):
         pass
 
     def preprocess_message(self, message):
-        # if not self.word2vec_model:
-        #     raise Exception('cannot find word2vec model')
-        #
-        # w2v_data, _ = w2v_transformation([message], [0], self.word2vec_model)
+        if not self.word2vec_model:
+            raise Exception('cannot find word2vec model')
 
-        w2v_data = numpy.random.rand(500)
+        w2v_data, _ = w2v_transformation([message], [0], self.word2vec_model)
+
+        # w2v_data = numpy.random.rand(500)
         return w2v_data
