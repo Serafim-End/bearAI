@@ -63,4 +63,5 @@ class CustomIntentTrainer(IntentTrainer):
 
         w2v_data, _ = w2v_transformation([message], [0], self.word2vec_model)
 
+        # w2v_data = numpy.random.rand(500)
         return w2v_data

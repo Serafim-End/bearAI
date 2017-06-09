@@ -1,16 +1,12 @@
 # coding: utf-8
-import numpy
 import pandas as pd
-import pymorphy2
 
 from sklearn.ensemble import BaggingClassifier
 
-from assistant.assistant import Assistant
-from assistant.utils.module_loading import import_loading
+
 from assistant.utils.w2v_processing import morph
 from assistant.utils.w2v_processing import (
     w2v_transformation,
-    get_word2vec_model
 )
 from domain.adapter import DomainAdapter
 from domain.models import Domain

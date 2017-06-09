@@ -27,10 +27,9 @@ class Task(object):
         return None
 
     def __repr__(self):
-        return json.dumps({
-                'domain': self.domain.id,
-                'intent': self.intent.id,
-                'status': self.status,
+        return {
+                'domain': self.domain,
+                'intent': self.intent,
+                'is_active': self.status,
                 'parameter': self.parameters
             }
-        )
